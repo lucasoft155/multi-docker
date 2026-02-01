@@ -1,0 +1,74 @@
+# Define el nombre del workflow de GitHub Actions
+name: Deploy MultiDocker
+
+# Define cuándo se ejecutará este workflow
+on:
+  # Se ejecuta cuando hay un push al repositorio
+  push:
+    # Especifica las ramas que activan el workflow
+    branches:
+      # Solo se ejecuta cuando hay push a la rama master
+      - master
+
+# Define los trabajos (jobs) que se ejecutarán
+jobs:
+  # Nombre del job: build
+  build:
+    # Especifica el sistema operativo donde se ejecutará (última versión de Ubuntu)
+    runs-on: ubuntu-latest
+    # Define los pasos que se ejecutarán en secuencia
+    steps:
+      # Paso 1: Descarga el código del repositorio
+      - uses: actions/checkout@v3
+      # Paso 2: Inicia sesión en Docker Hub usando credenciales secretas
+      - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      # Paso 3: Construye la imagen Docker del cliente para pruebas usando Dockerfile.dev
+      - run: docker build -t rallycoding/react-test-up -f ./client/Dockerfile.dev ./client
+      # Paso 4: Ejecuta los tests del cliente en un contenedor con la variable CI=true
+      - run: docker run -e CI=true rallycoding/react-test-up npm test
+
+      # Paso 5: Construye la imagen Docker del cliente para producción
+      - run: docker build -t rallycoding/multi-client-up ./client
+      # Paso 6: Construye la imagen Docker de nginx
+      - run: docker build -t rallycoding/multi-nginx-up ./nginx
+      # Paso 7: Construye la imagen Docker del servidor
+      - run: docker build -t rallycoding/multi-server-up ./server
+      # Paso 8: Construye la imagen Docker del worker
+      - run: docker build -t rallycoding/multi-worker-up ./worker
+
+      # Paso 9: Sube la imagen del cliente a Docker Hub
+      - run: docker push rallycoding/multi-client-up
+      # Paso 10: Sube la imagen de nginx a Docker Hub
+      - run: docker push rallycoding/multi-nginx-up
+      # Paso 11: Sube la imagen del servidor a Docker Hub
+      - run: docker push rallycoding/multi-server-up
+      # Paso 12: Sube la imagen del worker a Docker Hub
+      - run: docker push rallycoding/multi-worker-up
+
+      # Paso 13: Nombre descriptivo del paso
+      - name: Generate deployment package
+        # Crea un archivo ZIP con todos los archivos excepto los de .git
+        run: zip -r deploy.zip . -x '*.git*'
+
+      # Paso 14: Nombre descriptivo del paso de despliegue
+      - name: Deploy to EB
+        # Usa una acción de terceros para desplegar a AWS Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v18
+        # Configuración de parámetros para el despliegue
+        with:
+          # Clave de acceso de AWS desde los secretos
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          # Clave secreta de AWS desde los secretos
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          # Nombre de la aplicación en Elastic Beanstalk
+          application_name: multi-docker
+          # Nombre del entorno en Elastic Beanstalk
+          environment_name: Multi-docker-env
+          # Nombre del bucket S3 existente para almacenar el paquete de despliegue
+          existing_bucket_name: elasticbeanstalk-us-east-1-923445559289
+          # Región de AWS donde se desplegará
+          region: us-east-1
+          # Etiqueta de versión usando el SHA del commit de GitHub
+          version_label: ${{ github.sha }}
+          # Archivo ZIP que contiene el paquete de despliegue
+          deployment_package: deploy.zip
