@@ -23,27 +23,27 @@ jobs:
       # Paso 2: Inicia sesión en Docker Hub usando credenciales secretas
       - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
       # Paso 3: Construye la imagen Docker del cliente para pruebas usando Dockerfile.dev
-      - run: docker build -t rallycoding/react-test-up -f ./client/Dockerfile.dev ./client
+      - run: docker build -t lucasoft/react-test-up -f ./client/Dockerfile.dev ./client
       # Paso 4: Ejecuta los tests del cliente en un contenedor con la variable CI=true
-      - run: docker run -e CI=true rallycoding/react-test-up npm test
+      - run: docker run -e CI=true lucasoft/react-test-up npm test
 
       # Paso 5: Construye la imagen Docker del cliente para producción
-      - run: docker build -t rallycoding/multi-client-up ./client
+      - run: docker build -t lucasoft/multi-client-up ./client
       # Paso 6: Construye la imagen Docker de nginx
-      - run: docker build -t rallycoding/multi-nginx-up ./nginx
+      - run: docker build -t lucasoft/multi-nginx-up ./nginx
       # Paso 7: Construye la imagen Docker del servidor
-      - run: docker build -t rallycoding/multi-server-up ./server
+      - run: docker build -t lucasoft/multi-server-up ./server
       # Paso 8: Construye la imagen Docker del worker
-      - run: docker build -t rallycoding/multi-worker-up ./worker
+      - run: docker build -t lucasoft/multi-worker-up ./worker
 
       # Paso 9: Sube la imagen del cliente a Docker Hub
-      - run: docker push rallycoding/multi-client-up
+      - run: docker push lucasoft/multi-client-up
       # Paso 10: Sube la imagen de nginx a Docker Hub
-      - run: docker push rallycoding/multi-nginx-up
+      - run: docker push lucasoft/multi-nginx-up
       # Paso 11: Sube la imagen del servidor a Docker Hub
-      - run: docker push rallycoding/multi-server-up
+      - run: docker push lucasoft/multi-server-up
       # Paso 12: Sube la imagen del worker a Docker Hub
-      - run: docker push rallycoding/multi-worker-up
+      - run: docker push lucasoft/multi-worker-up
 
       # Paso 13: Nombre descriptivo del paso
       - name: Generate deployment package
