@@ -1,12 +1,12 @@
 version: "3"
 services:
   client:
-    image: "lucasoft155/multi-client-up"
+    image: "lucasoft155/multi-client:v1.0"
     mem_limit: 128m
     hostname: client
 
   server:
-    image: "lucasoft155/multi-server-up"
+    image: "lucasoft155/multi-server:v1.0"
     mem_limit: 128m
     hostname: api
     environment:
@@ -19,7 +19,7 @@ services:
       - PGPORT=$PGPORT
 
   worker:
-    image: "lucasoft155/multi-worker-up"
+    image: "lucasoft155/multi-worker:v1.0"
     mem_limit: 128m
     hostname: worker
     environment:
@@ -27,7 +27,7 @@ services:
       - REDIS_PORT=$REDIS_PORT
 
   nginx:
-    image: "lucasoft155/multi-nginx-up"
+    image: "lucasoft155/multi-nginx:v1.0"
     mem_limit: 128m
     hostname: nginx
     ports:
