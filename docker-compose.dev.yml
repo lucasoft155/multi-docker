@@ -1,0 +1,56 @@
+version: '3'
+services:
+# Propósito: configuran el servidor Postgres al iniciar. Docker/Postgres 
+# las lee para crear el usuario, la base de datos y la contraseña.
+  postgres:
+    image: "postgres:latest"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "3050:80"
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
+  api:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      # Propósito: el cliente de Redis en Node.js las usa para conectarse al servidor.
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      # Propósito: el cliente de Postgres en Node.js las usa para conectarse al servidor.
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres
+      - PGPORT=5432
+  client:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    environment:
+      - WDS_SOCKET_PORT=0
+  worker:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app

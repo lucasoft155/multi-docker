@@ -50,25 +50,25 @@ jobs:
         # Crea un archivo ZIP con todos los archivos excepto los de .git
         run: zip -r deploy.zip . -x '*.git*'
 
-      # Paso 14: Nombre descriptivo del paso de despliegue (COMENTADO - se implementará en la siguiente sección)
-      # - name: Deploy to EB
-      #   # Usa una acción de terceros para desplegar a AWS Elastic Beanstalk
-      #   uses: einaregilsson/beanstalk-deploy@v18
-      #   # Configuración de parámetros para el despliegue
-      #   with:
-      #     # Clave de acceso de AWS desde los secretos
-      #     aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
-      #     # Clave secreta de AWS desde los secretos
-      #     aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
-      #     # Nombre de la aplicación en Elastic Beanstalk
-      #     application_name: multi-docker
-      #     # Nombre del entorno en Elastic Beanstalk
-      #     environment_name: Multi-docker-env
-      #     # Nombre del bucket S3 existente para almacenar el paquete de despliegue
-      #     existing_bucket_name: elasticbeanstalk-us-east-1-923445559289
-      #     # Región de AWS donde se desplegará
-      #     region: us-east-1
-      #     # Etiqueta de versión usando el SHA del commit de GitHub
-      #     version_label: ${{ github.sha }}
-      #     # Archivo ZIP que contiene el paquete de despliegue
-      #     deployment_package: deploy.zip
+      # Paso 14: Nombre descriptivo del paso de despliegue
+      - name: Deploy to EB
+        # Usa una acción de terceros para desplegar a AWS Elast ic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v18
+        # Configuración de parámetros para el despliegue
+        with:
+          # Clave de acceso de AWS desde los secretos
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }}
+          # Clave secreta de AWS desde los secretos
+          aws_secret_key: ${{ secrets.AWS_SECRET_KEY }}
+          # Nombre de la aplicación en Elastic Beanstalk
+          application_name: multi-docker
+          # Nombre del entorno en Elastic Beanstalk
+          environment_name: Multi-docker-env
+          # Nombre del bucket S3 existente para almacenar el paquete de despliegue
+          existing_bucket_name: elasticbeanstalk-us-east-2-851334203913
+          # Región de AWS donde se desplegará
+          region: us-east-2
+          # Etiqueta de versión usando el SHA del commit de GitHub
+          version_label: ${{ github.sha }}
+          # Archivo ZIP que contiene el paquete de despliegue
+          deployment_package: deploy.zip

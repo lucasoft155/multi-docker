@@ -85,22 +85,3 @@ app.post('/values', async (req, res) => {
 app.listen(5000, () => {
     console.log('Listening on port 5000');
 });
-
-/* pgClient.on("connect", (client) => {
-    client
-      .query("CREATE TABLE IF NOT EXISTS values (number INT)")
-      .catch((err) => console.error(err));
-  });
-
-
-  const pgClient = new Pool({
-    user: keys.pgUser,
-    host: keys.pgHost,
-    database: keys.pgDatabase,
-    password: keys.pgPassword,
-    port: keys.pgPort,
-    ssl:
-      process.env.NODE_ENV !== 'production'
-        ? false
-        : { rejectUnauthorized: false },
-  }); */
