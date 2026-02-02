@@ -48,6 +48,11 @@ jobs:
       # Paso 13: Nombre descriptivo del paso
       - name: Generate deployment package
         # Crea un archivo ZIP con todos los archivos excepto los de .git
+        # El ZIP es necesario porque contiene el docker-compose.yml que le dice a AWS:
+        # - Qué imágenes Docker descargar desde Docker Hub (nombres y versiones)
+        # - Cómo ejecutar los contenedores (puertos, memoria, hostnames, variables de entorno)
+        # - Relaciones entre servicios (links, networks)
+        # Sin este ZIP, AWS no sabría qué imágenes usar ni cómo configurar los contenedores
         run: zip -r deploy.zip . -x '*.git*'
 
       # Paso 14: Nombre descriptivo del paso de despliegue
